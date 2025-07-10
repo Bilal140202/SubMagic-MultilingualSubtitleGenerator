@@ -31,16 +31,16 @@ export function ExportSRT({ subtitles }: ExportSRTProps) {
       
       switch (selectedFormat) {
         case 'srt':
-          content = this.generateSRT(subtitles)
+          content = generateSRT(subtitles)
           break
         case 'vtt':
-          content = this.generateVTT(subtitles)
+          content = generateVTT(subtitles)
           break
         case 'txt':
-          content = this.generateTXT(subtitles)
+          content = generateTXT(subtitles)
           break
         default:
-          content = this.generateSRT(subtitles)
+          content = generateSRT(subtitles)
       }
       
       // Create and download file
@@ -67,10 +67,10 @@ export function ExportSRT({ subtitles }: ExportSRTProps) {
   }
 
   // Generate SRT format
-  private generateSRT = (subtitles: Subtitle[]): string => {
+  const generateSRT = (subtitles: Subtitle[]): string => {
     return subtitles.map((subtitle, index) => {
-      const startTime = this.formatSRTTime(subtitle.startTime)
-      const endTime = this.formatSRTTime(subtitle.endTime)
+      const startTime = formatSRTTime(subtitle.startTime)
+      const endTime = formatSRTTime(subtitle.endTime)
       const text = subtitle.translatedText || subtitle.text
       
       return `${index + 1}\n${startTime} --> ${endTime}\n${text}\n`
@@ -78,11 +78,11 @@ export function ExportSRT({ subtitles }: ExportSRTProps) {
   }
 
   // Generate VTT format
-  private generateVTT = (subtitles: Subtitle[]): string => {
+  const generateVTT = (subtitles: Subtitle[]): string => {
     const header = 'WEBVTT\n\n'
     const content = subtitles.map(subtitle => {
-      const startTime = this.formatVTTTime(subtitle.startTime)
-      const endTime = this.formatVTTTime(subtitle.endTime)
+      const startTime = formatVTTTime(subtitle.startTime)
+      const endTime = formatVTTTime(subtitle.endTime)
       const text = subtitle.translatedText || subtitle.text
       
       return `${startTime} --> ${endTime}\n${text}\n`
@@ -92,15 +92,15 @@ export function ExportSRT({ subtitles }: ExportSRTProps) {
   }
 
   // Generate plain text format
-  private generateTXT = (subtitles: Subtitle[]): string => {
+  const generateTXT = (subtitles: Subtitle[]): string => {
     return subtitles.map(subtitle => {
       const text = subtitle.translatedText || subtitle.text
-      return `[${this.formatTime(subtitle.startTime)} - ${this.formatTime(subtitle.endTime)}] ${text}`
+      return `[${formatTime(subtitle.startTime)} - ${formatTime(subtitle.endTime)}] ${text}`
     }).join('\n')
   }
 
   // Format time for SRT (HH:MM:SS,mmm)
-  private formatSRTTime = (seconds: number): string => {
+  const formatSRTTime = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600)
     const minutes = Math.floor((seconds % 3600) / 60)
     const secs = Math.floor(seconds % 60)
@@ -110,7 +110,7 @@ export function ExportSRT({ subtitles }: ExportSRTProps) {
   }
 
   // Format time for VTT (HH:MM:SS.mmm)
-  private formatVTTTime = (seconds: number): string => {
+  const formatVTTTime = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600)
     const minutes = Math.floor((seconds % 3600) / 60)
     const secs = Math.floor(seconds % 60)
@@ -120,7 +120,7 @@ export function ExportSRT({ subtitles }: ExportSRTProps) {
   }
 
   // Format time for display (MM:SS)
-  private formatTime = (seconds: number): string => {
+  const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60)
     const secs = Math.floor(seconds % 60)
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
