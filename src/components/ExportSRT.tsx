@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Download, FileText, Check } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { Subtitle } from './SubtitleEditor'
 
 const EXPORT_FORMATS = [
   { id: 'srt', name: 'SRT', description: 'SubRip Subtitle' },
@@ -8,25 +9,121 @@ const EXPORT_FORMATS = [
   { id: 'txt', name: 'TXT', description: 'Plain Text' }
 ]
 
-export function ExportSRT() {
+interface ExportSRTProps {
+  subtitles: Subtitle[]
+}
+
+export function ExportSRT({ subtitles }: ExportSRTProps) {
   const [selectedFormat, setSelectedFormat] = useState('srt')
   const [isExporting, setIsExporting] = useState(false)
   const [exported, setExported] = useState(false)
 
   const handleExport = async () => {
+    if (subtitles.length === 0) {
+      alert('Please generate subtitles first before exporting.')
+      return
+    }
+    
     setIsExporting(true)
     
-    // TODO: Implement actual export logic
-    console.log('Exporting as:', selectedFormat)
-    
-    // Simulate export
-    setTimeout(() => {
+    try {
+      let content = ''
+      
+      switch (selectedFormat) {
+        case 'srt':
+          content = this.generateSRT(subtitles)
+          break
+        case 'vtt':
+          content = this.generateVTT(subtitles)
+          break
+        case 'txt':
+          content = this.generateTXT(subtitles)
+          break
+        default:
+          content = this.generateSRT(subtitles)
+      }
+      
+      // Create and download file
+      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `subtitles.${selectedFormat}`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+      
       setIsExporting(false)
       setExported(true)
       
       // Reset exported state after 2 seconds
       setTimeout(() => setExported(false), 2000)
-    }, 1500)
+    } catch (error) {
+      console.error('Export failed:', error)
+      setIsExporting(false)
+      alert('Export failed. Please try again.')
+    }
+  }
+
+  // Generate SRT format
+  private generateSRT = (subtitles: Subtitle[]): string => {
+    return subtitles.map((subtitle, index) => {
+      const startTime = this.formatSRTTime(subtitle.startTime)
+      const endTime = this.formatSRTTime(subtitle.endTime)
+      const text = subtitle.translatedText || subtitle.text
+      
+      return `${index + 1}\n${startTime} --> ${endTime}\n${text}\n`
+    }).join('\n')
+  }
+
+  // Generate VTT format
+  private generateVTT = (subtitles: Subtitle[]): string => {
+    const header = 'WEBVTT\n\n'
+    const content = subtitles.map(subtitle => {
+      const startTime = this.formatVTTTime(subtitle.startTime)
+      const endTime = this.formatVTTTime(subtitle.endTime)
+      const text = subtitle.translatedText || subtitle.text
+      
+      return `${startTime} --> ${endTime}\n${text}\n`
+    }).join('\n')
+    
+    return header + content
+  }
+
+  // Generate plain text format
+  private generateTXT = (subtitles: Subtitle[]): string => {
+    return subtitles.map(subtitle => {
+      const text = subtitle.translatedText || subtitle.text
+      return `[${this.formatTime(subtitle.startTime)} - ${this.formatTime(subtitle.endTime)}] ${text}`
+    }).join('\n')
+  }
+
+  // Format time for SRT (HH:MM:SS,mmm)
+  private formatSRTTime = (seconds: number): string => {
+    const hours = Math.floor(seconds / 3600)
+    const minutes = Math.floor((seconds % 3600) / 60)
+    const secs = Math.floor(seconds % 60)
+    const milliseconds = Math.floor((seconds % 1) * 1000)
+    
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')},${milliseconds.toString().padStart(3, '0')}`
+  }
+
+  // Format time for VTT (HH:MM:SS.mmm)
+  private formatVTTTime = (seconds: number): string => {
+    const hours = Math.floor(seconds / 3600)
+    const minutes = Math.floor((seconds % 3600) / 60)
+    const secs = Math.floor(seconds % 60)
+    const milliseconds = Math.floor((seconds % 1) * 1000)
+    
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}.${milliseconds.toString().padStart(3, '0')}`
+  }
+
+  // Format time for display (MM:SS)
+  private formatTime = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60)
+    const secs = Math.floor(seconds % 60)
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
   }
 
   return (

@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { Languages, Globe, Loader2 } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { Translator } from '../lib/translate'
+import { Subtitle } from './SubtitleEditor'
 
 const LANGUAGES = [
   { code: 'en', name: 'English' },
@@ -17,20 +19,47 @@ const LANGUAGES = [
   { code: 'hi', name: 'Hindi' }
 ]
 
-export function TranslateButton() {
+interface TranslateButtonProps {
+  subtitles: Subtitle[]
+  onTranslationComplete: (translatedSubtitles: Subtitle[]) => void
+}
+
+export function TranslateButton({ subtitles, onTranslationComplete }: TranslateButtonProps) {
   const [isTranslating, setIsTranslating] = useState(false)
   const [targetLanguage, setTargetLanguage] = useState('en')
   const [showLanguages, setShowLanguages] = useState(false)
+  const [translator] = useState(() => new Translator())
 
   const handleTranslate = async () => {
-    setIsTranslating(true)
-    // TODO: Implement translation logic
-    console.log('Translating to:', targetLanguage)
+    if (subtitles.length === 0) {
+      alert('Please generate subtitles first before translating.')
+      return
+    }
     
-    // Simulate translation
-    setTimeout(() => {
+    setIsTranslating(true)
+    
+    try {
+      console.log('Translating to:', targetLanguage)
+      
+      // Extract texts to translate
+      const textsToTranslate = subtitles.map(sub => sub.text)
+      
+      // Translate all texts
+      const translations = await translator.translateBatch(textsToTranslate, targetLanguage)
+      
+      // Update subtitles with translations
+      const translatedSubtitles = subtitles.map((subtitle, index) => ({
+        ...subtitle,
+        translatedText: translations[index]?.translatedText || subtitle.text
+      }))
+      
+      onTranslationComplete(translatedSubtitles)
       setIsTranslating(false)
-    }, 2000)
+    } catch (error) {
+      console.error('Translation failed:', error)
+      setIsTranslating(false)
+      alert('Translation failed. Please try again.')
+    }
   }
 
   const selectedLanguage = LANGUAGES.find(lang => lang.code === targetLanguage)

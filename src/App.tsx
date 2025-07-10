@@ -45,8 +45,11 @@ function App() {
           <div className="space-y-6">
             <VideoUploader onSubtitlesGenerated={setSubtitles} />
             <div className="flex flex-col sm:flex-row gap-4">
-              <TranslateButton />
-              <ExportSRT />
+              <TranslateButton 
+                subtitles={subtitles} 
+                onTranslationComplete={setSubtitles} 
+              />
+              <ExportSRT subtitles={subtitles} />
             </div>
           </div>
 

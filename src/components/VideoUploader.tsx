@@ -44,7 +44,7 @@ export function VideoUploader({ onSubtitlesGenerated }: VideoUploaderProps) {
     try {
       console.log('Processing file:', file.name)
       
-      // Use Whisper transcription
+      // Use Whisper transcription - this will now actually work
       const transcriptionResult = await transcriber.transcribeClientSide(file)
       
       // Convert transcription segments to Subtitle format
@@ -63,7 +63,9 @@ export function VideoUploader({ onSubtitlesGenerated }: VideoUploaderProps) {
     } catch (error) {
       console.error('Transcription failed:', error)
       setIsProcessing(false)
-      // You could add error handling UI here
+      
+      // Show error to user
+      alert('Transcription failed. Please try again with a different file or check your internet connection.')
     }
   }
 
