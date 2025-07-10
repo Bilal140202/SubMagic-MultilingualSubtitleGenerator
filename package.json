@@ -1,5 +1,6 @@
 {
   "name": "capgen",
+  "type": "module",
   "version": "1.0.0",
   "description": "AI Subtitle & Translation Web App - CapCut-style captioning with premium UI",
   "private": true,
