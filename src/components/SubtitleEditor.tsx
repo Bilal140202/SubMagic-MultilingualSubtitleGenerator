@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Edit3, Clock, Type } from 'lucide-react'
 import { motion } from 'framer-motion'
 
-interface Subtitle {
+export interface Subtitle {
   id: string
   startTime: number
   endTime: number
@@ -10,31 +10,12 @@ interface Subtitle {
   translatedText?: string
 }
 
-export function SubtitleEditor() {
-  const [subtitles, setSubtitles] = useState<Subtitle[]>([
-    {
-      id: '1',
-      startTime: 0,
-      endTime: 3,
-      text: 'Welcome to CapGen, the AI-powered subtitle generator.',
-      translatedText: ''
-    },
-    {
-      id: '2',
-      startTime: 3,
-      endTime: 7,
-      text: 'Upload your video or audio file to get started.',
-      translatedText: ''
-    },
-    {
-      id: '3',
-      startTime: 7,
-      endTime: 11,
-      text: 'Our AI will automatically generate accurate subtitles for you.',
-      translatedText: ''
-    }
-  ])
+interface SubtitleEditorProps {
+  subtitles: Subtitle[]
+  setSubtitles: React.Dispatch<React.SetStateAction<Subtitle[]>>
+}
 
+export function SubtitleEditor({ subtitles, setSubtitles }: SubtitleEditorProps) {
   const [editingId, setEditingId] = useState<string | null>(null)
 
   const formatTime = (seconds: number) => {

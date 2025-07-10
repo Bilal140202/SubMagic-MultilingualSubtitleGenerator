@@ -1,11 +1,18 @@
 import React, { useCallback, useState } from 'react'
 import { Upload, Video, FileAudio, X } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { WhisperTranscriber } from '../lib/whisper'
+import { Subtitle } from './SubtitleEditor'
 
-export function VideoUploader() {
+interface VideoUploaderProps {
+  onSubtitlesGenerated: (subtitles: Subtitle[]) => void
+}
+
+export function VideoUploader({ onSubtitlesGenerated }: VideoUploaderProps) {
   const [file, setFile] = useState<File | null>(null)
   const [isDragOver, setIsDragOver] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
+  const [transcriber] = useState(() => new WhisperTranscriber())
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -33,13 +40,31 @@ export function VideoUploader() {
     if (!file) return
     
     setIsProcessing(true)
-    // TODO: Implement Whisper transcription
-    console.log('Processing file:', file.name)
     
-    // Simulate processing
-    setTimeout(() => {
+    try {
+      console.log('Processing file:', file.name)
+      
+      // Use Whisper transcription
+      const transcriptionResult = await transcriber.transcribeClientSide(file)
+      
+      // Convert transcription segments to Subtitle format
+      const generatedSubtitles: Subtitle[] = transcriptionResult.segments.map(segment => ({
+        id: segment.id.toString(),
+        startTime: Math.floor(segment.start),
+        endTime: Math.floor(segment.end),
+        text: segment.text.trim(),
+        translatedText: ''
+      }))
+      
+      // Update subtitles in parent component
+      onSubtitlesGenerated(generatedSubtitles)
+      
       setIsProcessing(false)
-    }, 3000)
+    } catch (error) {
+      console.error('Transcription failed:', error)
+      setIsProcessing(false)
+      // You could add error handling UI here
+    }
   }
 
   return (

@@ -1,11 +1,14 @@
 import React from 'react'
+import { useState } from 'react'
 import { VideoUploader } from './components/VideoUploader'
-import { SubtitleEditor } from './components/SubtitleEditor'
+import { SubtitleEditor, Subtitle } from './components/SubtitleEditor'
 import { TranslateButton } from './components/TranslateButton'
 import { ExportSRT } from './components/ExportSRT'
 import { MiniMonster } from './components/MiniMonster'
 
 function App() {
+  const [subtitles, setSubtitles] = useState<Subtitle[]>([])
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       {/* Header */}
@@ -40,7 +43,7 @@ function App() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column - Upload & Controls */}
           <div className="space-y-6">
-            <VideoUploader />
+            <VideoUploader onSubtitlesGenerated={setSubtitles} />
             <div className="flex flex-col sm:flex-row gap-4">
               <TranslateButton />
               <ExportSRT />
@@ -49,7 +52,7 @@ function App() {
 
           {/* Right Column - Subtitle Editor */}
           <div>
-            <SubtitleEditor />
+            <SubtitleEditor subtitles={subtitles} setSubtitles={setSubtitles} />
           </div>
         </div>
       </main>
