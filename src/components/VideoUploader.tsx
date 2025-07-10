@@ -1,7 +1,7 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useState, useMemo } from 'react'
 import { Upload, Video, FileAudio, X } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { WhisperTranscriber } from '../lib/whisper'
+import { WhisperTranscriber, WHISPER_MODELS } from '../lib/whisper'
 import { Subtitle } from './SubtitleEditor'
 
 interface VideoUploaderProps {
@@ -12,7 +12,8 @@ export function VideoUploader({ onSubtitlesGenerated }: VideoUploaderProps) {
   const [file, setFile] = useState<File | null>(null)
   const [isDragOver, setIsDragOver] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
-  const [transcriber] = useState(() => new WhisperTranscriber())
+  const [selectedModelId, setSelectedModelId] = useState('Xenova/whisper-tiny')
+  const transcriber = useMemo(() => new WhisperTranscriber(selectedModelId), [selectedModelId])
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -72,6 +73,27 @@ export function VideoUploader({ onSubtitlesGenerated }: VideoUploaderProps) {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
       <h3 className="text-lg font-semibold text-slate-900 mb-4">Upload Video or Audio</h3>
+      
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-slate-700 mb-2">
+          Whisper Model
+        </label>
+        <select
+          value={selectedModelId}
+          onChange={(e) => setSelectedModelId(e.target.value)}
+          className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          disabled={isProcessing}
+        >
+          {WHISPER_MODELS.map((model) => (
+            <option key={model.id} value={model.id}>
+              {model.name} - {model.size} ({model.speed})
+            </option>
+          ))}
+        </select>
+        <p className="text-xs text-slate-500 mt-1">
+          Multilingual models can transcribe various languages including Korean, Japanese, Chinese, etc.
+        </p>
+      </div>
       
       {!file ? (
         <motion.div

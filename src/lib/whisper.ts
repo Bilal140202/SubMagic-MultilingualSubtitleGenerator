@@ -15,11 +15,11 @@ export interface TranscriptionSegment {
 }
 
 export class WhisperTranscriber {
-  private model: string = 'Xenova/whisper-tiny.en'
+  private model: string = 'Xenova/whisper-tiny'
   private transcriber: Pipeline | null = null
   private isLoading: boolean = false
   
-  constructor(model: string = 'Xenova/whisper-tiny.en') {
+  constructor(model: string = 'Xenova/whisper-tiny') {
     this.model = model
   }
 
