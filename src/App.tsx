@@ -1,4 +1,3 @@
-import React from 'react'
 import { useState } from 'react'
 import { VideoUploader } from './components/VideoUploader'
 import { SubtitleEditor, Subtitle } from './components/SubtitleEditor'

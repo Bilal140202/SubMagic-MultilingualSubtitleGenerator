@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Edit3, Clock, Type } from 'lucide-react'
 import { motion } from 'framer-motion'
 
@@ -16,8 +16,6 @@ interface SubtitleEditorProps {
 }
 
 export function SubtitleEditor({ subtitles, setSubtitles }: SubtitleEditorProps) {
-  const [editingId, setEditingId] = useState<string | null>(null)
-
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
     const secs = seconds % 60

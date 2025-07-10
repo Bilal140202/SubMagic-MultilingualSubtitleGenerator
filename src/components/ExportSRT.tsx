@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Download, FileText, Check } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { Subtitle } from './SubtitleEditor'
