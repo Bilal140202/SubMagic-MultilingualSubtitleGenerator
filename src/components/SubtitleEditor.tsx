@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Edit3, Clock, Type } from 'lucide-react'
 import { motion } from 'framer-motion'
 

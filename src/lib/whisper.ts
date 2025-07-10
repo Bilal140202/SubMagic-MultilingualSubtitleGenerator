@@ -41,10 +41,7 @@ export class WhisperTranscriber {
     
     try {
       console.log('Loading Whisper model:', this.model)
-      this.transcriber = await pipeline('automatic-speech-recognition', this.model, {
-        chunk_length_s: 30,
-        stride_length_s: 5,
-      })
+      this.transcriber = await pipeline('automatic-speech-recognition', this.model)
       console.log('Whisper model loaded successfully')
       return this.transcriber
     } catch (error) {
