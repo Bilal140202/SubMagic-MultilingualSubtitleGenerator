@@ -1,0 +1,2 @@
+# SubMagic-MultilingualSubtitleGenerator
+SubMagic-MultilingualSubtitleGenerator
